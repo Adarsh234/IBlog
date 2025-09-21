@@ -151,8 +151,6 @@ Contributions are welcome! If you’d like to:
 
 ## License
 
-MIT License © \Adarsh Sharma
+All the right is registered @ Adarsh Sharma ©
 
 ---
-
-```
