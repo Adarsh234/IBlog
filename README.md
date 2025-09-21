@@ -1,8 +1,3 @@
-Here’s a suggested **README.md** for your *IBlog* repo. You can edit/tailor to your liking (add more details/screenshots etc.).
-
----
-
-````markdown
 # IBlog
 
 IBlog is a blogging platform/web app — comprising both a frontend and backend — built to allow users to write, publish, edit, and browse blog posts.  
@@ -140,8 +135,6 @@ IBlog/
 └── package.json
 ```
 
-*(Adjust or add/remove folders/files based on your actual folder structure.)*
-
 ---
 
 ## Contributing
@@ -158,16 +151,8 @@ Contributions are welcome! If you’d like to:
 
 ## License
 
-Add your license here, e.g.:
-
-MIT License © \[Your Name]
+MIT License © \Adarsh Sharma
 
 ---
 
-```
-
----
-
-If you want, I can generate a more customized version *with screenshots, badges, etc.* — or translate it into whatever style you prefer. Do you want me to prepare that?
-::contentReference[oaicite:0]{index=0}
 ```
