@@ -4,7 +4,7 @@ import { GrGithub } from 'react-icons/gr'
 import { FaLinkedinIn } from 'react-icons/fa'
 import { IoMailOutline } from 'react-icons/io5'
 import { BsTwitterX } from 'react-icons/bs'
-import './Aboutpage.css'
+import './AboutPage.css'
 import Myself from './Myself/Myself'
 import Footer from './Footer'
 
