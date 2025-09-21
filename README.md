@@ -45,7 +45,7 @@ IBlog is a blogging platform/web app — comprising both a frontend and backend 
    ```bash
    git clone https://github.com/Adarsh234/IBlog.git
    cd IBlog
-````
+   ````
 
 2. **Install dependencies**
 
