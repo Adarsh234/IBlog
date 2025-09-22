@@ -14,7 +14,7 @@ connectDB();
 
 // Allowed frontend domains
 const allowedOrigins = [
-  'https://i-blog-peach.vercel.app', // your frontend
+  'https://i-blog-peach.vercel.app', // production frontend
   'http://localhost:3000'             // local dev
 ];
 
@@ -23,18 +23,21 @@ const app = express();
 // CORS middleware
 app.use(cors({
   origin: function(origin, callback) {
-    // allow requests with no origin (like Postman)
-    if (!origin) return callback(null, true);
+    if (!origin) return callback(null, true); // allow non-browser requests
     if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-      return callback(new Error(msg), false);
+      return callback(new Error('CORS policy does not allow this origin'), false);
     }
     return callback(null, true);
   },
-  credentials: true
+  credentials: true,
+  methods: ['GET','POST','PUT','DELETE','OPTIONS'],
+  allowedHeaders: ['Content-Type','Authorization']
 }));
 
-// Clerk middleware for authentication
+// Handle preflight OPTIONS requests
+app.options('*', cors());
+
+// Clerk authentication middleware
 app.use(clerkMiddleware());
 
 // Parse JSON
