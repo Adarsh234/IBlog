@@ -8,23 +8,21 @@ import { clerkMiddleware } from '@clerk/express';
 import cors from 'cors';
 import serverless from 'serverless-http';
 
-// Connect to DB
+// Connect to MongoDB
 connectDB();
 
 const app = express();
-
-// Middleware
 app.use(cors());
 app.use(clerkMiddleware());
 app.use(express.json());
 
-// Routes
+// Mount routes
 app.use('/webhooks', webhookRouter);
 app.use('/users', userRouter);
 app.use('/posts', postRouter);
 app.use('/comments', commentRouter);
 
-// Error handler
+// Error handling
 app.use((error, req, res, next) => {
   res.status(error.status || 500).json({
     message: error.message || 'Something went wrong!',
@@ -33,5 +31,5 @@ app.use((error, req, res, next) => {
   });
 });
 
-// Export for Vercel
+// Export handler for Vercel
 export const handler = serverless(app);
