@@ -17,12 +17,12 @@ const app = express();
 // 2️⃣ CORS configuration
 const allowedOrigins = [
   'https://i-blog-peach.vercel.app', // frontend production
-  'http://localhost:5173'             // local dev
+  'http://localhost:3000'             // local dev
 ];
 
 app.use(cors({
   origin: function(origin, callback) {
-    // allow requests with no origin (like mobile apps or Postman)
+    // Allow requests with no origin (like mobile apps or Postman)
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -46,7 +46,12 @@ app.use('/api/users', userRouter);
 app.use('/api/posts', postRouter);
 app.use('/api/comments', commentRouter);
 
-// 6️⃣ Error handling
+// 6️⃣ Handle preflight requests globally
+app.options('*', (req, res) => {
+  res.sendStatus(204);
+});
+
+// 7️⃣ Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err);
   res.status(err.status || 500).json({
@@ -56,5 +61,5 @@ app.use((err, req, res, next) => {
   });
 });
 
-// 7️⃣ Export serverless handler for Vercel
+// 8️⃣ Export serverless handler for Vercel
 export const handler = serverless(app);
