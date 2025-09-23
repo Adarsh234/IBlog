@@ -8,12 +8,10 @@ import webhookRouter from '../routes/webhook.route.js';
 import { clerkMiddleware } from '@clerk/express';
 import cors from 'cors';
 
-// Connect MongoDB
 connectDB();
 
 const app = express();
 
-// 1️⃣ CORS configuration
 const allowedOrigins = [
   'https://i-blog-peach.vercel.app',
   'http://localhost:3000'
@@ -32,22 +30,22 @@ app.use(cors({
   allowedHeaders: ['Content-Type','Authorization']
 }));
 
-// 2️⃣ JSON parsing
-app.use(express.json());
+// Handle preflight early
+app.options('*', cors({
+  origin: allowedOrigins,
+  credentials: true,
+  methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
+  allowedHeaders: ['Content-Type','Authorization']
+}));
 
-// 3️⃣ Clerk auth
+app.use(express.json());
 app.use(clerkMiddleware());
 
-// 4️⃣ Routes
 app.use('/api/posts', postRouter);
 app.use('/api/users', userRouter);
 app.use('/api/comments', commentRouter);
 app.use('/api/webhooks', webhookRouter);
 
-// 5️⃣ Preflight handling
-app.options('*', (req, res) => res.sendStatus(204));
-
-// 6️⃣ Error handling
 app.use((err, req, res, next) => {
   console.error(err);
   res.status(err.status || 500).json({
@@ -57,5 +55,4 @@ app.use((err, req, res, next) => {
   });
 });
 
-// 7️⃣ Export serverless handler
 export const handler = serverless(app);
