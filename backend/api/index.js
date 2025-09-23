@@ -1,36 +1,61 @@
-import express from "express";
-import mongoose from "mongoose";
-import dotenv from "dotenv";
-import cors from "cors";
-import cookieParser from "cookie-parser";
+// api/index.js
+import express from 'express';
+import serverless from 'serverless-http';
+import connectDB from '../lib/connectDB.js';
+import userRouter from '../routes/user.route.js';
+import postRouter from '../routes/post.route.js';
+import commentRouter from '../routes/comment.route.js';
+import webhookRouter from '../routes/webhook.route.js';
+import { clerkMiddleware } from '@clerk/express';
+import cors from 'cors';
 
-dotenv.config();
-const app = express();
-
+// Connect to MongoDB
+connectDB();
 
 const allowedOrigins = [
-  "https://i-blog-peach.vercel.app", // frontend (production)
-  "http://localhost:5173",           // local dev
+  'https://i-blog-peach.vercel.app', // frontend production
+  'http://localhost:3000'             // local dev
 ];
 
-app.use(cors({
-  origin: allowedOrigins,
-  credentials: true,
-}));
+const app = express();
 
+// CORS middleware
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+  }
+  // Handle OPTIONS preflight
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204);
+  }
+  next();
+});
+
+// Clerk authentication middleware
+app.use(clerkMiddleware());
+
+// Parse JSON
 app.use(express.json());
-app.use(cookieParser());
 
-// ✅ routes are prefixed with /api
-import postRoutes from "./routes/posts.js";
-import authRoutes from "./routes/auth.js";
+// Routes
+app.use('/webhooks', webhookRouter);
+app.use('/users', userRouter);
+app.use('/posts', postRouter);
+app.use('/comments', commentRouter);
 
-app.use("/api/posts", postRoutes);
-app.use("/api/auth", authRoutes);
+// Error handling
+app.use((error, req, res, next) => {
+  console.error(error);
+  res.status(error.status || 500).json({
+    message: error.message || 'Something went wrong!',
+    status: error.status || 500,
+    stack: process.env.NODE_ENV === 'production' ? undefined : error.stack
+  });
+});
 
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ Connected to MongoDB"))
-  .catch((err) => console.error("❌ MongoDB error:", err));
-
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+// Export serverless handler for Vercel
+export const handler = serverless(app);
