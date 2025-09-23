@@ -8,15 +8,13 @@ dotenv.config();
 const app = express();
 
 const allowedOrigins = [
-  "https://i-blog-peach.vercel.app",
-  "http://localhost:5173"
+  "https://i-blog-peach.vercel.app", // frontend (production)
+  "http://localhost:5173",           // local dev
 ];
 
 app.use(cors({
   origin: allowedOrigins,
   credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
 app.use(express.json());
