@@ -9,7 +9,8 @@ const app = express();
 
 
 const allowedOrigins = [
-  "*",           // local dev
+  "https://i-blog-peach.vercel.app", // frontend (production)
+  "http://localhost:5173",           // local dev
 ];
 
 app.use(cors({
