@@ -1,28 +1,26 @@
-// api/index.js
 import express from 'express';
 import serverless from 'serverless-http';
 import connectDB from '../lib/connectDB.js';
-import userRouter from '../routes/user.route.js';
 import postRouter from '../routes/post.route.js';
+import userRouter from '../routes/user.route.js';
 import commentRouter from '../routes/comment.route.js';
 import webhookRouter from '../routes/webhook.route.js';
 import { clerkMiddleware } from '@clerk/express';
 import cors from 'cors';
 
-// 1️⃣ Connect to MongoDB
+// Connect MongoDB
 connectDB();
 
 const app = express();
 
-// 2️⃣ CORS configuration
+// 1️⃣ CORS configuration
 const allowedOrigins = [
-  'https://i-blog-peach.vercel.app', // frontend production
-  'http://localhost:3000'             // local dev
+  'https://i-blog-peach.vercel.app',
+  'http://localhost:3000'
 ];
 
 app.use(cors({
   origin: function(origin, callback) {
-    // Allow requests with no origin (like mobile apps or Postman)
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -30,28 +28,26 @@ app.use(cors({
     }
   },
   credentials: true,
-  methods: ['GET','POST','PUT','DELETE','OPTIONS'],
+  methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
   allowedHeaders: ['Content-Type','Authorization']
 }));
 
-// 3️⃣ Parse JSON bodies
+// 2️⃣ JSON parsing
 app.use(express.json());
 
-// 4️⃣ Clerk authentication middleware
+// 3️⃣ Clerk auth
 app.use(clerkMiddleware());
 
-// 5️⃣ API Routes
-app.use('/api/webhooks', webhookRouter);
-app.use('/api/users', userRouter);
+// 4️⃣ Routes
 app.use('/api/posts', postRouter);
+app.use('/api/users', userRouter);
 app.use('/api/comments', commentRouter);
+app.use('/api/webhooks', webhookRouter);
 
-// 6️⃣ Handle preflight requests globally
-app.options('*', (req, res) => {
-  res.sendStatus(204);
-});
+// 5️⃣ Preflight handling
+app.options('*', (req, res) => res.sendStatus(204));
 
-// 7️⃣ Error handling middleware
+// 6️⃣ Error handling
 app.use((err, req, res, next) => {
   console.error(err);
   res.status(err.status || 500).json({
@@ -61,5 +57,5 @@ app.use((err, req, res, next) => {
   });
 });
 
-// 8️⃣ Export serverless handler for Vercel
+// 7️⃣ Export serverless handler
 export const handler = serverless(app);
