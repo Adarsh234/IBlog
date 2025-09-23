@@ -9,53 +9,52 @@ import webhookRouter from '../routes/webhook.route.js';
 import { clerkMiddleware } from '@clerk/express';
 import cors from 'cors';
 
-// Connect to MongoDB
+// 1️⃣ Connect to MongoDB
 connectDB();
-
-const allowedOrigins = [
-  'https://i-blog-peach.vercel.app', // frontend production
-  'http://localhost:3000'             // local dev
-];
 
 const app = express();
 
-// CORS middleware
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
-  }
-  // Handle OPTIONS preflight
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(204);
-  }
-  next();
-});
+// 2️⃣ CORS configuration
+const allowedOrigins = [
+  'https://i-blog-peach.vercel.app', // frontend production
+  'http://localhost:5173'             // local dev
+];
 
-// Clerk authentication middleware
-app.use(clerkMiddleware());
+app.use(cors({
+  origin: function(origin, callback) {
+    // allow requests with no origin (like mobile apps or Postman)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET','POST','PUT','DELETE','OPTIONS'],
+  allowedHeaders: ['Content-Type','Authorization']
+}));
 
-// Parse JSON
+// 3️⃣ Parse JSON bodies
 app.use(express.json());
 
-// Routes
-app.use('/webhooks', webhookRouter);
-app.use('/users', userRouter);
-app.use('/posts', postRouter);
-app.use('/comments', commentRouter);
+// 4️⃣ Clerk authentication middleware
+app.use(clerkMiddleware());
 
-// Error handling
-app.use((error, req, res, next) => {
-  console.error(error);
-  res.status(error.status || 500).json({
-    message: error.message || 'Something went wrong!',
-    status: error.status || 500,
-    stack: process.env.NODE_ENV === 'production' ? undefined : error.stack
+// 5️⃣ API Routes
+app.use('/api/webhooks', webhookRouter);
+app.use('/api/users', userRouter);
+app.use('/api/posts', postRouter);
+app.use('/api/comments', commentRouter);
+
+// 6️⃣ Error handling
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(err.status || 500).json({
+    message: err.message || 'Something went wrong!',
+    status: err.status || 500,
+    stack: process.env.NODE_ENV === 'production' ? undefined : err.stack
   });
 });
 
-// Export serverless handler for Vercel
+// 7️⃣ Export serverless handler for Vercel
 export const handler = serverless(app);
