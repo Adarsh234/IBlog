@@ -3,54 +3,34 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import postRoutes from "./routes/posts.js";
-import authRoutes from "./routes/auth.js";
 
 dotenv.config();
-
 const app = express();
 
-// Allowed origins
+
 const allowedOrigins = [
-  "https://i-blog-peach.vercel.app",
-  "http://localhost:5173",
+  "https://i-blog-peach.vercel.app", // frontend (production)
+  "http://localhost:5173",           // local dev
 ];
 
-// CORS middleware
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      // Allow requests with no origin (like Postman or server-to-server)
-      if (!origin) return callback(null, true);
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true,
+}));
 
-      if (allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("CORS not allowed for this origin"));
-      }
-    },
-    credentials: true, // allows cookies/auth headers
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
-
-// Parse JSON & cookies
 app.use(express.json());
 app.use(cookieParser());
 
-// Routes
+// ✅ routes are prefixed with /api
+import postRoutes from "./routes/posts.js";
+import authRoutes from "./routes/auth.js";
+
 app.use("/api/posts", postRoutes);
 app.use("/api/auth", authRoutes);
 
-// Connect to MongoDB
-mongoose
-  .connect(process.env.MONGO_URI)
+mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("✅ Connected to MongoDB"))
   .catch((err) => console.error("❌ MongoDB error:", err));
 
-// Health check route (optional)
-app.get("/", (req, res) => res.send("API running!"));
-
-// Export app for Vercel serverless
-export default app;
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
