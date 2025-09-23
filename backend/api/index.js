@@ -3,52 +3,54 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import postRoutes from "./routes/posts.js";
+import authRoutes from "./routes/auth.js";
 
 dotenv.config();
+
 const app = express();
 
 // Allowed origins
 const allowedOrigins = [
-  "https://i-blog-peach.vercel.app", // Frontend production
-  "http://localhost:5173",           // Local dev
+  "https://i-blog-peach.vercel.app",
+  "http://localhost:5173",
 ];
 
 // CORS middleware
-app.use(cors({
-  origin: function(origin, callback) {
-    // Allow requests with no origin (like Postman, curl)
-    if (!origin) return callback(null, true);
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like Postman or server-to-server)
+      if (!origin) return callback(null, true);
 
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    } else {
-      return callback(new Error(`CORS policy blocked: ${origin}`), false);
-    }
-  },
-  credentials: true, // Needed for cookies, auth
-}));
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("CORS not allowed for this origin"));
+      }
+    },
+    credentials: true, // allows cookies/auth headers
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
-// Built-in middlewares
+// Parse JSON & cookies
 app.use(express.json());
 app.use(cookieParser());
 
 // Routes
-import postRoutes from "./routes/posts.js";
-import authRoutes from "./routes/auth.js";
-
 app.use("/api/posts", postRoutes);
 app.use("/api/auth", authRoutes);
 
-// MongoDB connection
-mongoose.connect(process.env.MONGO_URI)
+// Connect to MongoDB
+mongoose
+  .connect(process.env.MONGO_URI)
   .then(() => console.log("✅ Connected to MongoDB"))
   .catch((err) => console.error("❌ MongoDB error:", err));
 
-// Serverless handler for Vercel
-export default app;
+// Health check route (optional)
+app.get("/", (req, res) => res.send("API running!"));
 
-// Optional: local dev server
-if (process.env.NODE_ENV !== "production") {
-  const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
-}
+// Export app for Vercel serverless
+export default app;
