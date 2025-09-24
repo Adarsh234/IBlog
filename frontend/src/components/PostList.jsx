@@ -1,30 +1,23 @@
 import PostListItem from './PostListItem'
-import { useInfiniteQuery } from '@tanstack/react-query'
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import { useSearchParams } from 'react-router-dom'
 import { TailSpin } from 'react-loader-spinner'
 
-// Backend API base URL from environment
-const API_URL = import.meta.env.VITE_API_URL
-
 const fetchPosts = async (pageParam, searchParams) => {
   const searchParamsObj = Object.fromEntries([...searchParams])
 
-  try {
-    const res = await axios.get(`${API_URL}/posts`, {
-      params: { page: pageParam, limit: 10, ...searchParamsObj },
-      withCredentials: true, // needed if backend uses cookies or auth
-    })
-    return res.data
-  } catch (err) {
-    console.error('Error fetching posts:', err)
-    throw err
-  }
+  // console.log(searchParamsObj)
+
+  const res = await axios.get(`${import.meta.env.VITE_API_URL}/posts`, {
+    params: { page: pageParam, limit: 10, ...searchParamsObj },
+  })
+  return res.data
 }
 
 const PostList = () => {
-  const [searchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
 
   const {
     data,
@@ -33,13 +26,16 @@ const PostList = () => {
     hasNextPage,
     isFetching,
     isFetchingNextPage,
+    status,
   } = useInfiniteQuery({
     queryKey: ['posts', searchParams.toString()],
     queryFn: ({ pageParam = 1 }) => fetchPosts(pageParam, searchParams),
+    initialPageParam: 1,
     getNextPageParam: (lastPage, pages) =>
       lastPage.hasMore ? pages.length + 1 : undefined,
   })
 
+  // if (status === "loading") return "Loading...";
   if (isFetching)
     return (
       <div className="flex flex-col gap-8 items-center mt-12">
@@ -49,6 +45,8 @@ const PostList = () => {
           color="#3f66dd"
           ariaLabel="tail-spin-loading"
           radius="1"
+          wrapperStyle={{}}
+          wrapperClass=""
           visible={true}
         />
         <div className="text-xl md:text-3xl xl:text-4xl 2xl:text-5xl font-semibold">
@@ -57,12 +55,8 @@ const PostList = () => {
       </div>
     )
 
-  if (error)
-    return (
-      <div className="text-center mt-12 text-red-600 font-semibold">
-        Something went wrong! Please try again later.
-      </div>
-    )
+  // if (status === "error") return "Something went wrong!";
+  if (error) return 'Something went wrong!'
 
   const allPosts = data?.pages?.flatMap((page) => page.posts) || []
 
@@ -71,9 +65,9 @@ const PostList = () => {
       dataLength={allPosts.length}
       next={fetchNextPage}
       hasMore={!!hasNextPage}
-      loader={<h4 className="text-center my-4">Loading more posts...</h4>}
+      loader={<h4>Loading more posts...</h4>}
       endMessage={
-        <p className="text-center font-light text-xl my-6 font-serif">
+        <p className="text-center font-light-600 text-3xl mb-6 font-serif">
           <b>All posts loaded!</b>
         </p>
       }
