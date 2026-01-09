@@ -29,10 +29,9 @@ IBlog is a blogging platform/web app — comprising both a frontend and backend 
 
 | Component | Technology |
 |-----------|-------------|
-| Frontend | JavaScript, React/Vue/Angular (replace with whatever you used) |
-| Backend | Node.js / Express / (or whatever your backend is) |
-| Database | MongoDB / PostgreSQL / MySQL / etc. |
-| Other tools | CSS / SASS / Webpack / etc. |
+| Frontend | JavaScript, React, TailWind CSS |
+| Backend | Node.js, Express |
+| Database | MongoDB |
 
 ---
 
