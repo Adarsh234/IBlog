@@ -2,6 +2,13 @@
 
 IBlog is a blogging platform/web app — comprising both a frontend and backend — built to allow users to write, publish, edit, and browse blog posts.  
 
+![GitHub language count](https://img.shields.io/github/languages/count/Adarsh234/CodeCracker)
+![GitHub top language](https://img.shields.io/github/languages/top/Adarsh234/CodeCracker)
+![Vercel Deploy](https://img.shields.io/badge/Deploy-Vercel-black?logo=vercel)
+![GitHub last commit](https://img.shields.io/github/last-commit/Adarsh234/CodeCracker)
+![License](https://img.shields.io/badge/license-MIT-blue)
+
+
 ## Table of Contents
 
 - [Features](#features)  
