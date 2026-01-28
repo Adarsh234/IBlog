@@ -18,10 +18,10 @@ IBlog is a blogging platform/web app — comprising both a frontend and backend 
 ## Features
 
 - Create, Read, Update, Delete (CRUD) operations for blog posts  
-- User authentication (if implemented)  
-- Rich text editor support (if applicable)  
+- User authentication 
+- Rich text editor support 
 - Frontend + Backend separation  
-- Responsive UI (if applicable)  
+- Responsive UI
 
 ---
 
