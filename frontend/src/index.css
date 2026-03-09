@@ -11,13 +11,29 @@ body {
 .animatedButton {
   animation-duration: 10000ms;
 }
+/* In your index.css */
+.write-editor .ql-toolbar.ql-snow {
+  border: none;
+  border-bottom: 2px solid #f1f5f9; /* Slightly thicker divider */
+  padding: 0 0 1rem 0; /* Adjusted padding */
+  margin-bottom: 1rem;
+}
 
-.ql-container {
-  border: none !important;
+.write-editor .ql-container.ql-snow {
+  border: none;
+  font-size: 1.125rem; 
+  font-family: inherit;
+  color: #334155; 
 }
-.ql-toolbar {
-  border: none !important;
+
+.write-editor .ql-editor {
+  padding: 0;
+  min-height: 300px;
 }
-.ql-editor {
-  border: none !important;
+
+/* CHANGED: Darkened the placeholder text so it's easy to read */
+.write-editor .ql-editor.ql-blank::before {
+  left: 0;
+  font-style: normal;
+  color: #94a3b8; /* slate-400 */
 }

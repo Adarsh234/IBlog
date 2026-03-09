@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import Upload from '../components/Upload'
+import { TailSpin } from 'react-loader-spinner'
 
 const Write = () => {
   const { isLoaded, isSignedIn } = useUser()
@@ -16,20 +17,21 @@ const Write = () => {
   const [video, setVideo] = useState('')
   const [progress, setProgress] = useState(0)
 
+  const navigate = useNavigate()
+  const { getToken } = useAuth()
+
   useEffect(() => {
-    img && setValue((prev) => prev + `<p><image src="${img.url}"/></p>`)
+    img && setValue((prev) => prev + `<p><img src="${img.url}"/></p>`)
   }, [img])
 
   useEffect(() => {
     video &&
       setValue(
-        (prev) => prev + `<p><iframe class="ql-video" src="${video.url}"/></p>`
+        (prev) =>
+          prev +
+          `<p><iframe class="ql-video" src="${video.url}"/></iframe></p>`,
       )
   }, [video])
-
-  const navigate = useNavigate()
-
-  const { getToken } = useAuth()
 
   const mutation = useMutation({
     mutationFn: async (newPost) => {
@@ -41,33 +43,34 @@ const Write = () => {
       })
     },
     onSuccess: (res) => {
-      toast.success('Post has been created')
+      toast.success('Story published successfully! 🎉')
       navigate(`/${res.data.slug}`)
+    },
+    onError: (error) => {
+      toast.error(error.response?.data || 'Failed to publish story')
     },
   })
 
   if (!isLoaded) {
-    return <div className="">Loading...</div>
-  }
-  if (isLoaded && !isSignedIn) {
     return (
-      <div className="h-[calc(100vh-64px)] flex items-center justify-center bg-blue">
-        <div className="bg-white shadow-xl rounded-2xl p-8 max-w-xl text-center">
-          <h2 className="text-4xl font-bold text-gray-800 mb-4">You’re not signed in</h2>
-          <p className="text-gray-600 mb-6 text-xl">
-            Please log in to create and share your awesome stories with the community.
-          </p>
-          <a
-            href="/login"
-            className="inline-block bg-blue-800 text-white font-medium px-6 py-2 rounded-xl shadow-md hover:bg-blue-500 transition-all duration-300"
-          >
-            Go to Login
-          </a>
-        </div>
+      <div className="flex justify-center items-center h-[60vh]">
+        <TailSpin height="60" width="60" color="#4f46e5" ariaLabel="loading" />
       </div>
     )
   }
-  
+
+  if (isLoaded && !isSignedIn) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[60vh] gap-4 text-center px-4">
+        <h2 className="text-2xl font-bold text-slate-800">
+          Authentication Required
+        </h2>
+        <p className="text-slate-500">
+          Please sign in to start writing your story.
+        </p>
+      </div>
+    )
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -81,74 +84,125 @@ const Write = () => {
       content: value,
     }
 
-    console.log(data)
+    if (!data.title || !data.content) {
+      toast.error('Please provide at least a title and some content.')
+      return
+    }
 
     mutation.mutate(data)
   }
 
   return (
-    <div className="h-[calc(100vh-64px)] md:h-[calc(100vh-80px)] flex flex-col gap-6">
-      <h1 className="text-cl font-light">Create a New Post</h1>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-6 flex-1 mb-6">
-        <Upload type="image" setProgress={setProgress} setData={setCover}>
-          <button className="w-max p-2 shadow-md rounded-xl text-sm text-gray-500 bg-white">
-            Add a cover image
-          </button>
-        </Upload>
-        <input
-          className="text-4xl font-semibold bg-transparent outline-none"
-          type="text"
-          placeholder="My Awesome Story"
-          name="title"
-        />
-        <div className="flex items-center gap-4">
-          <label htmlFor="" className="text-sm">
-            Choose a category:
-          </label>
-          <select
-            name="category"
-            id=""
-            className="p-2 rounded-xl bg-white shadow-md"
-          >
-            <option value="general">General</option>
-            <option value="web-design">Web Design</option>
-            <option value="development">Development</option>
-            <option value="databases">Databases</option>
-            <option value="seo">Search Engines</option>
-            <option value="cyber-security">Cyber Security</option>
-            <option value="marketing">Marketing</option>
-          </select>
-        </div>
-        <textarea
-          className="p-4 rounded-xl bg-white shadow-md"
-          name="desc"
-          placeholder="A Short Description"
-        />
-        <div className="flex flex-1 ">
-          <div className="flex flex-col gap-2 mr-2">
-            <Upload type="image" setProgress={setProgress} setData={setImg}>
-              🌆
-            </Upload>
-            <Upload type="video" setProgress={setProgress} setData={setVideo}>
-              ▶️
-            </Upload>
-          </div>
-          <ReactQuill
-            theme="snow"
-            className="flex-1 rounded-xl bg-white shadow-md"
-            value={value}
-            onChange={setValue}
-            readOnly={0 < progress && progress < 100}
-          />
-        </div>
+    <div className="max-w-5xl mx-auto py-10 px-4 md:px-8 flex flex-col gap-10">
+      {/* HEADER: Enhanced contrast with indigo border */}
+      <div className="flex items-center justify-between border-b-2 border-indigo-100 pb-6">
+        <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">
+          Draft a New Story
+        </h1>
+
         <button
           disabled={mutation.isPending || (0 < progress && progress < 100)}
-          className="bg-blue-800 text-white font-medium rounded-xl mt-4 p-2 w-36 disabled:bg-blue-400 disabled:cursor-not-allowed"
+          onClick={() => document.getElementById('hidden-submit').click()}
+          className="bg-indigo-600 text-white font-bold rounded-full px-10 py-3 shadow-lg shadow-indigo-200 hover:bg-indigo-700 hover:shadow-indigo-300 hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {mutation.isPending ? 'Loading...' : 'Send'}
+          {mutation.isPending ? 'Publishing...' : 'Publish'}
         </button>
-        {'Progress:' + progress}
-        {/* {mutation.isError && <span>{mutation.error.message}</span>} */}
+      </div>
+
+      <form onSubmit={handleSubmit} className="flex flex-col gap-8">
+        {/* COVER IMAGE: Increased definition */}
+        <div className="flex flex-col gap-3">
+          <Upload type="image" setProgress={setProgress} setData={setCover}>
+            <div className="inline-flex items-center gap-2 px-6 py-3 bg-white border-2 border-slate-100 text-slate-600 rounded-2xl text-sm font-bold hover:border-indigo-200 hover:bg-indigo-50/30 transition-all cursor-pointer group shadow-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-indigo-500">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+              </svg>
+              {cover ? 'Image Selected ✓' : 'Add Cover Image'}
+            </div>
+          </Upload>
+          {progress > 0 && progress < 100 && (
+            <div className="w-full max-w-xs h-2 bg-slate-100 rounded-full overflow-hidden shadow-inner">
+              <div className="h-full bg-indigo-500 transition-all duration-300" style={{ width: `${progress}%` }}></div>
+            </div>
+          )}
+        </div>
+
+        {/* TITLE: High contrast placeholder and font weight */}
+        <textarea
+          name="title"
+          placeholder="Story Title"
+          className="text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 bg-transparent outline-none placeholder:text-slate-400 placeholder:opacity-50 resize-none min-h-[100px] leading-tight"
+          rows={1}
+          onInput={(e) => {
+            e.target.style.height = 'auto'
+            e.target.style.height = e.target.scrollHeight + 'px'
+          }}
+        />
+
+        {/* METADATA: Unified "Boxy" feel for better definition on light backgrounds */}
+        <div className="flex flex-col md:flex-row gap-6">
+          <div className="flex flex-col gap-2 w-full md:w-1/3">
+            <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">
+              Category
+            </label>
+            <select
+              name="category"
+              className="w-full p-4 bg-white border-2 border-slate-100 rounded-2xl text-slate-800 font-bold focus:outline-none focus:ring-4 focus:ring-indigo-50 focus:border-indigo-400 transition-all cursor-pointer appearance-none shadow-sm"
+            >
+              <option value="general">General</option>
+              <option value="web-design">Web Design</option>
+              <option value="development">Development</option>
+              <option value="databases">Databases</option>
+              <option value="seo">Search Engines</option>
+              <option value="cyber-security">Cyber Security</option>
+              <option value="marketing">Marketing</option>
+            </select>
+          </div>
+
+          <div className="flex flex-col gap-2 w-full md:w-2/3">
+            <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">
+              Short Description
+            </label>
+            <textarea
+              name="desc"
+              placeholder="What is this story about?"
+              className="w-full p-4 bg-white border-2 border-slate-100 rounded-2xl text-slate-700 font-medium placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-indigo-50 focus:border-indigo-400 transition-all resize-none min-h-[58px] shadow-sm"
+              rows={1}
+            />
+          </div>
+        </div>
+
+        {/* EDITOR: "Canvas" style with better shadow and spacing */}
+        <div className="flex flex-col gap-4 mt-4 relative">
+          <div className="w-full min-h-[450px] bg-white rounded-[2.5rem] p-6 md:p-10 shadow-xl shadow-indigo-900/5 border border-slate-100">
+            <ReactQuill
+              theme="snow"
+              value={value}
+              onChange={setValue}
+              readOnly={0 < progress && progress < 100}
+              placeholder="Tell your story..."
+              className="write-editor"
+            />
+          </div>
+
+          {/* SIDE TOOLS: Aligned better for modern UI */}
+          <div className="absolute top-24 -left-14 hidden xl:flex flex-col gap-4">
+            <Upload type="image" setProgress={setProgress} setData={setImg}>
+              <button type="button" className="w-10 h-10 flex items-center justify-center rounded-full bg-white border-2 border-slate-100 text-slate-400 hover:text-indigo-600 hover:border-indigo-200 shadow-sm transition-all hover:scale-110">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+              </button>
+            </Upload>
+            <Upload type="video" setProgress={setProgress} setData={setVideo}>
+              <button type="button" className="w-10 h-10 flex items-center justify-center rounded-full bg-white border-2 border-slate-100 text-slate-400 hover:text-red-500 hover:border-red-200 shadow-sm transition-all hover:scale-110">
+                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+              </button>
+            </Upload>
+          </div>
+        </div>
+
+        <button id="hidden-submit" type="submit" className="hidden"></button>
       </form>
     </div>
   )

@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import { createBrowserRouter, RouterProvider, Route } from 'react-router-dom'
+import ServerWaker from "./components/ServerWaker.jsx"
 import Homepage from './routes/Homepage.jsx'
 import PostListPage from './routes/PostListPage.jsx'
 import Write from './routes/Write.jsx'
@@ -63,7 +64,9 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
       <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
+        <ServerWaker>
+          <RouterProvider router={router} />
+        </ServerWaker>
         <ToastContainer position="bottom-right" />
       </QueryClientProvider>
     </ClerkProvider>
