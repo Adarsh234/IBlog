@@ -1,162 +1,142 @@
-# IBlog
+# IBlog 🚀
 
-IBlog is a blogging platform/web app — comprising both a frontend and backend — built to allow users to write, publish, edit, and browse blog posts.  
-
-![GitHub language count](https://img.shields.io/github/languages/count/Adarsh234/IBlog)
-![GitHub top language](https://img.shields.io/github/languages/top/Adarsh234/IBlog)
-![Vercel Deploy](https://img.shields.io/badge/Deploy-Vercel-black?logo=vercel)
-![GitHub last commit](https://img.shields.io/github/last-commit/Adarsh234/IBlog)
-![License](https://img.shields.io/badge/license-MIT-blue)
-
+IBlog is a premium, full-stack blogging platform built with the MERN stack. Designed with a modern, frosted-glass aesthetic and responsive grid layouts, it provides a seamless experience for users to write, publish, edit, and discover stories.
 
 ## Table of Contents
 
-- [Features](#features)  
-- [Tech Stack](#tech-stack)  
-- [Setup & Installation](#setup--installation)  
-- [Configuration](#configuration)  
-- [Usage](#usage)  
-- [Project Structure](#project-structure)  
-- [Contributing](#contributing)  
-- [License](#license)  
+* [Features](https://www.google.com/search?q=%23features)
+* [Tech Stack](https://www.google.com/search?q=%23tech-stack)
+* [Setup & Installation](https://www.google.com/search?q=%23setup--installation)
+* [Environment Variables](https://www.google.com/search?q=%23environment-variables)
+* [Deployment Architecture](https://www.google.com/search?q=%23deployment-architecture)
+* [License](https://www.google.com/search?q=%23license)
 
 ---
 
 ## Features
 
-- Create, Read, Update, Delete (CRUD) operations for blog posts  
-- User authentication 
-- Rich text editor support 
-- Frontend + Backend separation  
-- Responsive UI
+### 🎨 Premium User Interface
+
+* **Glassmorphism Design:** Modern, frosted-glass cards, subtle glowing backgrounds, and smooth hover state animations.
+* **Fully Responsive:** Beautiful grid layouts that adapt perfectly to mobile, tablet, and desktop screens.
+* **Tailwind Typography:** Automatically styled rich-text content for a distraction-free, magazine-like reading experience.
+
+### ✍️ Content Creation & Management
+
+* **Rich Text Editor:** Integrated `ReactQuill` for formatting text, adding links, and structuring articles.
+* **Media Uploads:** Progress-tracked image and video uploads for blog covers and inline content.
+* **CRUD Operations:** Users can create, read, update, and delete their own posts.
+* **Admin Controls:** Elevated privileges for featuring or moderating content.
+
+### ⚡ Advanced Functionality
+
+* **Optimistic UI Updates:** Powered by `@tanstack/react-query` for instant feedback when saving posts, liking, or commenting.
+* **Authentication:** Secure user login, registration, and session management powered by **Clerk**.
+* **Smart Cold-Start Handling:** Custom `ServerWaker` component to gracefully handle free-tier backend spin-ups with an animated loading UI.
 
 ---
 
 ## Tech Stack
 
-| Component | Technology |
-|-----------|-------------|
-| Frontend | JavaScript, React, TailWind CSS |
-| Backend | Node.js, Express |
-| Database | MongoDB |
+| Category | Technologies |
+| --- | --- |
+| **Frontend** | React 19 (Vite), Tailwind CSS, React Router DOM |
+| **Data Fetching** | TanStack React Query, Axios |
+| **Backend** | Node.js, Express.js |
+| **Database** | MongoDB (Mongoose) |
+| **Authentication** | Clerk Auth |
+| **UI Libraries** | React Icons, React Toastify, React Loader Spinner |
 
 ---
 
 ## Setup & Installation
 
-> These instructions assume you have Node.js installed, plus any needed database (if applicable).
+> **Prerequisites:** You must have Node.js installed and a MongoDB cluster (like Atlas) ready.
 
-1. **Clone the repository**
+**1. Clone the repository**
 
-   ```bash
-   git clone https://github.com/Adarsh234/IBlog.git
-   cd IBlog
-   ````
-
-2. **Install dependencies**
-
-   ```bash
-   cd backend
-   npm install
-   ```
-
-   ```bash
-   cd ../frontend
-   npm install
-   ```
-
-3. **Setup environment variables**
-
-   Create a `.env` file in the backend (and frontend if needed) folder with the required variables:
-
-   ```
-   PORT=5000
-   DB_URL=<your-database-connection-string>
-   JWT_SECRET=<your-jwt-secret>
-   ```
-
-   (Add any other environment variables your app requires.)
-
-4. **Run the application**
-
-   In one terminal:
-
-   ```bash
-   cd backend
-   npm run dev
-   ```
-
-   In another terminal:
-
-   ```bash
-   cd frontend
-   npm start
-   ```
-
-   By default, the frontend might run on `localhost:3000` and backend on `localhost:5000` (or whatever you have configured).
-
----
-
-## Configuration
-
-* **Database**: Make sure your database is running and accessible with credentials you provided in `.env`.
-* **JWT or Authentication**: Set up secrets.
-* **CORS / Proxy settings**: If your frontend and backend are on different hosts or ports, configure CORS or proxy appropriately.
-
----
-
-## Usage
-
-* Open the frontend in the browser (`http://localhost:3000` or configured address)
-* Use the UI to create blog posts
-* Register / Login (if part of the app)
-* Read, edit, delete posts
-* Explore how data flows between frontend and backend
-
----
-
-## Project Structure
+```bash
+git clone https://github.com/Adarsh234/IBlog.git
+cd IBlog
 
 ```
-IBlog/
-│
-├── backend/
-│   ├── controllers/
-│   ├── models/
-│   ├── routes/
-│   ├── middleware/
-│   ├── utils/
-│   └── server.js (or app.js)
-│
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── services/
-│   │   └── App.js (or main entry)
-│   └── public/
-│
-├── .gitignore
-├── README.md
-└── package.json
+
+**2. Install Backend Dependencies**
+
+```bash
+cd backend
+npm install
+
+```
+
+**3. Install Frontend Dependencies**
+
+```bash
+cd ../frontend
+npm install --legacy-peer-deps
+
+```
+
+*(Note: `--legacy-peer-deps` is required to resolve strict version checking between React 19 and React Query).*
+
+**4. Run the Development Servers**
+
+Open two separate terminal windows:
+
+**Terminal 1 (Backend):**
+
+```bash
+cd backend
+npm run dev
+
+```
+
+**Terminal 2 (Frontend):**
+
+```bash
+cd frontend
+npm run dev
+
 ```
 
 ---
 
-## Contributing
+## Environment Variables
 
-Contributions are welcome! If you’d like to:
+To run this project, you will need to add the following environment variables to your respective `.env` files.
 
-1. Fork the repository
-2. Create a new branch (`git checkout -b feature/my-feature`)
-3. Make your changes and commit (`git commit -m "Add some feature"`)
-4. Push to the branch (`git push origin feature/my-feature`)
-5. Open a Pull Request
+**Backend (`backend/.env`)**
+
+```env
+PORT=5000
+MONGO_URI=<your-mongodb-connection-string>
+CLERK_SECRET_KEY=<your-clerk-secret-key>
+# Add any Cloudinary/Firebase keys if used for media uploads
+
+```
+
+**Frontend (`frontend/.env.local`)**
+
+```env
+VITE_API_URL=http://localhost:5000
+VITE_CLERK_PUBLISHABLE_KEY=<your-clerk-publishable-key>
+
+```
 
 ---
 
-## License
+## Deployment Architecture
 
-All the right is registered @ Adarsh Sharma ©
+IBlog is configured for modern, split-stack deployment:
+
+* **Frontend:** Hosted on **Vercel**. Includes a custom `vercel.json` file to securely rewrite client-side routing paths and prevent 404 errors on page refreshes.
+* **Backend:** Hosted on **Render** (Web Service).
+* **Cold Start Mitigation:** Since free-tier backend services sleep after inactivity, the frontend implements a `ServerWaker` component that automatically pings the backend on initial load, displaying a premium loading screen until the server connects.
 
 ---
+
+## License & Author
+
+Crafted by **Adarsh Sharma** All rights reserved © 2026.
+
+*(Check out my other full-stack projects like CodeCracker and my AI Health Assistant on my [GitHub Profile](https://github.com/Adarsh234)!)*
